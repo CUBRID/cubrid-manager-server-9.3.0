@@ -1144,10 +1144,10 @@ void cm_mon_stat::gather_daily_dbs_mon(time_t gather_time) {
     if (true == call_task(ha_req, ha_res, ts_ha_status, errmsg)) {
         has_ha_info = true;
         if ("master" == ha_res["current_node_state"].asString()) {
-            ha_rmt_hostname = ha_res["noteA"].asString(); 
+            ha_rmt_hostname = ha_res["nodeA"].asString(); 
         }
         else {
-            ha_rmt_hostname = ha_res["noteB"].asString(); 
+            ha_rmt_hostname = ha_res["nodeB"].asString(); 
         }
     }
     else if (ERR_SYSTEM_CALL != ha_res["retval"].asInt()) {
