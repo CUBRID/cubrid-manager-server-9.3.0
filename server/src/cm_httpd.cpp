@@ -75,6 +75,7 @@ using namespace std;
 #define DEFAULT_THRD_NUM                      24
 #define DEFAULT_HTTP_TIMEOUT                  6 * 60    //second
 #define NUM_OF_FILES_IN_URL                   3
+#define STAT_MONITOR_INTERVAL                 1        // seconds
 
 static THREAD_FUNC automation_start (void *ud);
 static THREAD_FUNC aj_thread_r (void *aj);
@@ -206,6 +207,7 @@ cub_generic_request_handler (struct evhttp_request *req, void *arg)
     Json::Value root, response;
     Json::Reader reader;
     Json::StyledWriter writer;
+    char *data = NULL;
 
     input = evhttp_request_get_input_buffer (req);
     if (input == NULL)
@@ -215,6 +217,19 @@ cub_generic_request_handler (struct evhttp_request *req, void *arg)
     }
 
     len = (int) evbuffer_get_length (input);
+    if (len <= 0)
+      {
+        evhttp_send_reply (req, HTTP_BADREQUEST, "", NULL);
+        return;
+      }
+
+    data = (char *) evbuffer_pullup(input, len);
+    if (data == NULL)
+    {
+      evhttp_send_reply (req, HTTP_BADREQUEST, "", NULL);
+      return;
+    }
+
     body = (char *) malloc (len + 1);
     if (body == NULL)
     {
@@ -222,9 +237,16 @@ cub_generic_request_handler (struct evhttp_request *req, void *arg)
         return;
     }
 
+    memset (body, 0x00, len+1);
+    memcpy (body, data, len);
 
-    evbuffer_copyout (input, body, len);
-    body[len] = 0;
+    if (evbuffer_drain (input, len) < 0)
+      {
+        free (body);
+        evhttp_send_reply (req, HTTP_BADREQUEST, "", NULL);
+        return;
+      }
+
     //inustr = utf8_decode (body);
 
     if (!reader.parse (body, root))
@@ -375,7 +397,7 @@ cub_timeout_cb (evutil_socket_t fd, short event, void *arg)
  */
 void
 start_monitor_stat_cb (evutil_socket_t fd, short event, void *arg) {
-    struct timeval stat_tv = { 1, 0 };
+    struct timeval stat_tv = { STAT_MONITOR_INTERVAL, 0 };
 
     struct worker_context *work_ctx = (struct worker_context *) arg;
     if (!cub_loop_flag)
