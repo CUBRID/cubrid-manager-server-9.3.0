@@ -5799,7 +5799,46 @@ _check_backup_info (const char *conf_item[], int check_backupid,
             token = strtok (NULL, " ,");
         }
     }
+
+    /* check level: 0 (default ), 1, 2 */
+    if ((conf_item[6][0] < '0') || (conf_item[6][0] >= '3'))
+    {
+        snprintf (_dbmt_error, DBMT_ERROR_MSG_SIZE,
+                  "(%c) is not allowed for parameter(%s).", conf_item[6][0],
+                  autobackup_conf_entry[6]);
+        return ERR_WITH_MSG;
+    }
+
     /* check time */
+    if (conf_item[5][0] == 'i')
+    {
+      /* Check for interval check */
+      int len = 0, idx = 0;
+
+      snprintf (time_item, sizeof (time_item), "%s", conf_item[5]);
+      len = strlen (time_item);
+
+      if (len < 2)    /* if time_item = '' or 'i' then ERROR */
+        {
+            snprintf (_dbmt_error, DBMT_ERROR_MSG_SIZE,
+                    "(%s) is not valid time format for parameter(%s).",
+                    conf_item[5], autobackup_conf_entry[5]);
+            return ERR_WITH_MSG;
+        }
+
+        for (idx = 1; idx < len; idx++)
+          {
+            if ((time_item[idx] < '0') || (time_item[idx] > '9'))
+              {
+                  snprintf (_dbmt_error, DBMT_ERROR_MSG_SIZE,
+                    "(%s) is not valid time format for parameter(%s).",
+                    conf_item[5], autobackup_conf_entry[5]);
+                  return ERR_WITH_MSG;
+              }
+          }
+          return ERR_NO_ERROR;
+    }
+
     if (strlen (conf_item[5]) == 4)
     {
         snprintf (time_item, sizeof (time_item), "%s", conf_item[5]);
@@ -5846,14 +5885,7 @@ _check_backup_info (const char *conf_item[], int check_backupid,
                   conf_item[5], autobackup_conf_entry[5]);
         return ERR_WITH_MSG;
     }
-    /* check level: 0 (default ), 1, 2 */
-    if ((conf_item[6][0] < '0') || (conf_item[6][0] >= '3'))
-    {
-        snprintf (_dbmt_error, DBMT_ERROR_MSG_SIZE,
-                  "(%c) is not allowed for parameter(%s).", conf_item[6][0],
-                  autobackup_conf_entry[6]);
-        return ERR_WITH_MSG;
-    }
+    
     return ERR_NO_ERROR;
 }
 
