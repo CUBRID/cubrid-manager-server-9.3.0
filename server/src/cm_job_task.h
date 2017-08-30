@@ -34,7 +34,7 @@
 #define DBMT_ERROR_MSG_SIZE    5000
 
 #ifndef TASKNAME_LEN
-#define TASKNAME_LEN           50
+#define TASKNAME_LEN           128
 #endif
 
 #ifndef SIZE_BUFFER_MAX

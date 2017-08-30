@@ -2941,7 +2941,7 @@ tsRenameDB (nvplist * req, nvplist * res, char *_dbmt_error)
     char *exvolpath = NULL;
     char *advanced = NULL;
     char *forcedel = NULL;
-    char task_name[10];
+    char task_name[TASKNAME_LEN];
 
     const char *argv[10];
 
@@ -3954,7 +3954,7 @@ ts_checkdb (nvplist * req, nvplist * res, char *_dbmt_error)
 {
     char dbname_at_hostname[MAXHOSTNAMELEN + DB_NAME_LEN];
     char cmd_name[CUBRID_CMD_NAME_LEN];
-    char task_name[10];
+    char task_name[TASKNAME_LEN];
     const char *argv[7];
     T_DB_SERVICE_MODE db_mode;
 
@@ -6917,7 +6917,7 @@ ts_killtran (nvplist * req, nvplist * res, char *_dbmt_error)
     char *param = NULL;
     char dbname_at_hostname[MAXHOSTNAMELEN + DB_NAME_LEN];
     char cmd_name[CUBRID_CMD_NAME_LEN];
-    char task_name[10];
+    char task_name[TASKNAME_LEN];
     const char *argv[10];
     int ha_mode = 0;
     int argc = 0;
@@ -7041,7 +7041,7 @@ ts_lockdb (nvplist * req, nvplist * res, char *_dbmt_error)
     char buf[1024], tmpfile[PATH_MAX], tmpfile2[PATH_MAX], s[32];
     char dbname_at_hostname[MAXHOSTNAMELEN + DB_NAME_LEN];
     char cmd_name[CUBRID_CMD_NAME_LEN];
-    char task_name[10];
+    char task_name[TASKNAME_LEN];
 
     const char *argv[10];
     int argc = 0;
@@ -9860,7 +9860,7 @@ run_csql_statement (const char *sql_stat, char *dbname, char *dbuser,
 {
     char dbname_at_hostname[MAXHOSTNAMELEN + DB_NAME_LEN];
     char cmd_name[CUBRID_CMD_NAME_LEN];
-    char task_name[10];
+    char task_name[TASKNAME_LEN];
     const char *argv[15];
 
     int argc = 0;
