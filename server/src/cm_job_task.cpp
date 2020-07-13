@@ -211,6 +211,7 @@ typedef struct
 } T_BROKER_DIAGDATA;
 
 #define MAX_STATDUMP_PROC 16
+#define MAX_STATDUMP_MSG_LEN 256
 typedef struct
  {
    int pid;
@@ -15817,7 +15818,7 @@ int
 find_new_statdumpd_info (nvplist *res)
 {
   int i;
-  char msg [265];
+  char msg [MAX_STATDUMP_MSG_LEN];
 
   if (statdump_daemon == NULL)
     {
@@ -15840,7 +15841,8 @@ find_new_statdumpd_info (nvplist *res)
         }
     }
 
-  snprintf (msg, 256, "error: exceed max slot (%d). Too many statdump process(es) are running", MAX_STATDUMP_PROC);
+  snprintf (msg, MAX_STATDUMP_MSG_LEN, 
+           "error: exceed max slot (%d). Too many statdump process(es) are running", MAX_STATDUMP_PROC);
   nv_update_val (res, "note", msg);
   return -1;
 }
