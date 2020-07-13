@@ -220,8 +220,8 @@ typedef struct
 
  static T_STATDUMP_STAT *statdump_daemon = NULL;
 
- #define        STATD_IDLE      0
- #define        STATD_RUNNING   1
+#define        STATD_IDLE      0
+#define        STATD_RUNNING   1
 
 #if defined(WINDOWS)
 static void replace_colon (char *path);
@@ -338,7 +338,7 @@ static int _backup_cert (char *_dbmt_error);
 static int _recover_cert (char *_dbmt_error);
 
 static int find_statdumpd_info (char *dbname);
-static int find_new_statdumpd_info ();
+static int find_new_statdumpd_info (nvplist *res);
 
 static int
 _verify_user_passwd (char *dbname, char *dbuser, char *dbpasswd,
@@ -15716,10 +15716,10 @@ ts_start_statdump (nvplist *req, nvplist *res, char *_dbmt_error)
       return -1;
     }
 
-  slot = find_new_statdumpd_info ();
+  slot = find_new_statdumpd_info (res);
   if (slot < 0)
     {
-      nv_update_val (res, "note", "memory allocation error");
+      nv_update_val (res, "status", "error");
       return -1;
     }
   strcpy (statdump_daemon[slot].dbname, db_name);
@@ -15742,6 +15742,7 @@ ts_start_statdump (nvplist *req, nvplist *res, char *_dbmt_error)
   if (ret_val < 0)
     {
       nv_update_val (res, "note", "could not execute statdump");
+      nv_update_val (res, "status", "error");
       return -1;
     }
 
@@ -15813,14 +15814,17 @@ ts_stop_statdump (nvplist *req, nvplist *res, char *_dbmt_error)
 }
 
 int
-find_new_statdumpd_info ()
+find_new_statdumpd_info (nvplist *res)
 {
   int i;
+  char msg [265];
+
   if (statdump_daemon == NULL)
     {
        statdump_daemon = (T_STATDUMP_STAT *) calloc (sizeof(T_STATDUMP_STAT), MAX_STATDUMP_PROC);
        if (statdump_daemon == NULL)
          {
+           nv_update_val (res, "note", "memory allocation error");
            return -1;
          }
          else
@@ -15835,6 +15839,9 @@ find_new_statdumpd_info ()
           return i;
         }
     }
+
+  snprintf (msg, 256, "error: exceed max slot (%d). Too many statdump process(es) are running", MAX_STATDUMP_PROC);
+  nv_update_val (res, "note", msg);
   return -1;
 }
 
