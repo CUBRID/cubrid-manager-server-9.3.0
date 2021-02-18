@@ -1,6 +1,6 @@
-prefix=/home/kshanrel/rnd-349-cm-svr/cm_server_9.3.0/server/external/openssl/linux_64
+prefix=/usr/local
 exec_prefix=${prefix}
-libdir=${exec_prefix}/lib
+libdir=${exec_prefix}/lib64
 includedir=${prefix}/include
 
 Name: OpenSSL

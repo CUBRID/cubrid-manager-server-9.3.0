@@ -1,4 +1,4 @@
-prefix=/home/kshanrel/rnd-349-cm-svr/cm_server_9.3.0/server/external/openssl/linux_32
+prefix=/home/airnet/workspace/upgrade_openssl/openssl110e/x86/
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
